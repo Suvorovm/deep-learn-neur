@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import time
 from sklearn.metrics import precision_score
 from sklearn.metrics import classification_report
+from PIL import Image
 
 def test():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -122,6 +123,31 @@ def test():
     plt.show()
 
 
+    image = Image.open("./cat.jpg")
+    transformed_image = data_transforms(image)  # Apply the same transforms as in your dataset
+    transformed_image = transformed_image.unsqueeze(0).to(device)  # Add batch dimension and move to device
+
+    # Make prediction
+    net.eval()
+    with torch.no_grad():
+        output = net(transformed_image)
+        _, predicted_class = torch.max(output, 1)
+
+    # Display the image and prediction
+    plt.figure(figsize=(5, 5))
+
+    # Denormalize the image for viewing
+    img_np = transformed_image.squeeze().cpu().numpy().transpose((1, 2, 0))  # Remove batch dim, convert to HxWxC
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    img_np = std * img_np + mean  # Reverse normalization
+    img_np = np.clip(img_np, 0, 1)  # Clip values to be in valid range [0, 1]
+
+    # Show image and label
+    plt.imshow(img_np)
+    plt.title(f'Predicted: {class_names[predicted_class.item()]}')
+    plt.axis('off')
+    plt.show()
 
 if __name__ == '__main__':
     freeze_support()

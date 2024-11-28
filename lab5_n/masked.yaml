@@ -1,0 +1,6 @@
+path: ./data
+train: E:\Maga\2_1\deepLearning\proj\lab5_n\data\train
+val: E:\Maga\2_1\deepLearning\proj\lab5_n\data\val
+
+nc: 3
+names: ['cat', 'dog', 'wild']
